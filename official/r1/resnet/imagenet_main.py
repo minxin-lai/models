@@ -23,7 +23,8 @@ import os
 from absl import app as absl_app
 from absl import flags
 import tensorflow as tf
-
+import sys
+sys.path.append('/root/models')
 from official.r1.resnet import imagenet_preprocessing
 from official.r1.resnet import resnet_model
 from official.r1.resnet import resnet_run_loop
@@ -51,11 +52,11 @@ def get_filenames(is_training, data_dir):
   """Return filenames for dataset."""
   if is_training:
     return [
-        os.path.join(data_dir, 'train-%05d-of-01024' % i)
+        os.path.join(data_dir, 'train/train-%05d-of-01024' % i)
         for i in range(_NUM_TRAIN_FILES)]
   else:
     return [
-        os.path.join(data_dir, 'validation-%05d-of-00128' % i)
+        os.path.join(data_dir, 'validation/validation-%05d-of-00128' % i)
         for i in range(128)]
 
 

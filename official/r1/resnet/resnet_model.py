@@ -462,10 +462,10 @@ class Model(object):
     """
 
     if dtype in CASTABLE_TYPES:
-      var = getter(name, shape, tf.float32, *args, **kwargs)
+      var = getter(name, shape=shape, dtype=tf.float32, *args, **kwargs)
       return tf.cast(var, dtype=dtype, name=name + '_cast')
     else:
-      return getter(name, shape, dtype, *args, **kwargs)
+      return getter(name, shape=shape, dtype=dtype, *args, **kwargs)
 
   def _model_variable_scope(self):
     """Returns a variable scope that the model should be created under.

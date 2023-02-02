@@ -572,7 +572,7 @@ def resnet_main(
   run_config = tf.estimator.RunConfig(
       train_distribute=distribution_strategy,
       session_config=session_config,
-      save_checkpoints_secs=60*60*24,
+      save_checkpoints_secs=None,
       save_checkpoints_steps=None)
 
   # Initializes model with all but the dense layer from pretrained ResNet.
@@ -617,6 +617,12 @@ def resnet_main(
       flags_obj.hooks,
       model_dir=flags_obj.model_dir,
       batch_size=flags_obj.batch_size)
+
+  train_hooks.append(
+    tf.train.ProfilerHook(save_steps=100,
+                          output_dir="./timeline",
+                          show_dataflow=True,
+                          show_memory=True))
 
   def input_fn_train(num_epochs, input_context=None):
     return input_function(
@@ -671,20 +677,20 @@ def resnet_main(
       schedule = [flags_obj.epochs_between_evals for _ in range(int(n_loops))]
       schedule[-1] = train_epochs - sum(schedule[:-1])  # over counting.
 
-    for cycle_index, num_train_epochs in enumerate(schedule):
-      tf.compat.v1.logging.info('Starting cycle: %d/%d', cycle_index,
-                                int(n_loops))
+    # for cycle_index, num_train_epochs in enumerate(schedule):
+    #   tf.compat.v1.logging.info('Starting cycle: %d/%d', cycle_index,
+    #                             int(n_loops))
 
-      if num_train_epochs:
+    #   if num_train_epochs:
         # Since we are calling classifier.train immediately in each loop, the
         # value of num_train_epochs in the lambda function will not be changed
         # before it is used. So it is safe to ignore the pylint error here
         # pylint: disable=cell-var-from-loop
-        classifier.train(
-            input_fn=lambda input_context=None: input_fn_train(
-                num_train_epochs, input_context=input_context),
-            hooks=train_hooks,
-            max_steps=flags_obj.max_train_steps)
+      classifier.train(
+          input_fn=lambda input_context=None: input_fn_train(
+              1, input_context=input_context),
+          hooks=train_hooks,
+          max_steps=500)
 
       # flags_obj.max_train_steps is generally associated with testing and
       # profiling. As a result it is frequently called with synthetic data,
@@ -698,9 +704,9 @@ def resnet_main(
 
       benchmark_logger.log_evaluation_result(eval_results)
 
-      if model_helpers.past_stop_threshold(
-          flags_obj.stop_threshold, eval_results['accuracy']):
-        break
+      # if model_helpers.past_stop_threshold(
+      #     flags_obj.stop_threshold, eval_results['accuracy']):
+      #   break
 
   if flags_obj.export_dir is not None:
     # Exports a saved model for the given classifier.
