@@ -624,6 +624,12 @@ def resnet_main(
                           show_dataflow=True,
                           show_memory=True))
 
+  # import sys
+  # sys.path.append('/root/tensorflow-large-model-support')
+  # from tensorflow_large_model_support import LMS
+  # lms_hook = LMS(swapout_threshold=200, swapin_ahead=50, swapin_groupby=5)
+  # train_hooks.append(lms_hook)
+
   def input_fn_train(num_epochs, input_context=None):
     return input_function(
         is_training=True,
