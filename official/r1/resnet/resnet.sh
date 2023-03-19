@@ -42,5 +42,5 @@ then
 else 
     echo noswap
     export MEM_OPT_SWAP=false
-    TF_CPP_VMODULE=memory_optimizer=5,gpu_util=0 CUDA_VISIBLE_DEVICES=0  python -u imagenet_main.py --batch_size=$batch_size  --data_dir=/root/dataset/ILSVRC2012/tf_records    --resnet_size=$resnet_size 
+    TF_CPP_VMODULE=memory_optimizer=0,gpu_util=0 CUDA_VISIBLE_DEVICES=0  python -u imagenet_main.py --batch_size=$batch_size  --data_dir=/root/dataset/ILSVRC2012/tf_records    --resnet_size=$resnet_size 
 fi

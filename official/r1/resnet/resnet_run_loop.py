@@ -27,6 +27,7 @@ import functools
 import math
 import multiprocessing
 import os
+import time
 
 from absl import flags
 import tensorflow as tf
@@ -617,10 +618,13 @@ def resnet_main(
       flags_obj.hooks,
       model_dir=flags_obj.model_dir,
       batch_size=flags_obj.batch_size)
-
+  # print("train_hooks.batch_size")
+  # print(train_hooks)
+  model_dir = os.path.join('./result',
+                             'model_ResNet_' + str(int(time.time())))
   train_hooks.append(
     tf.train.ProfilerHook(save_steps=100,
-                          output_dir="./timeline",
+                          output_dir=model_dir,
                           show_dataflow=True,
                           show_memory=True))
 
@@ -696,7 +700,7 @@ def resnet_main(
           input_fn=lambda input_context=None: input_fn_train(
               1, input_context=input_context),
           hooks=train_hooks,
-          max_steps=500)
+          max_steps=400)
 
       # flags_obj.max_train_steps is generally associated with testing and
       # profiling. As a result it is frequently called with synthetic data,
